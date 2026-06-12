@@ -6,62 +6,27 @@
 ### 🧠 How It Works
 **Below is a clean workflow diagram**
 
-[1;37m┌──────────────────────────┐[0m
-[1;36m│        User Input         │[0m
-[1;37m└─────────────┬────────────┘[0m
-                │
-                ▼
-[1;37m┌──────────────────────────┐[0m
-[1;35m│     Gemini LLM (ReAct)    │[0m
-[1;35m│  Thought → Tool → Answer  │[0m
-[1;37m└─────────────┬────────────┘[0m
-                │
-   ┌────────────┼──────────────┐
-   ▼            ▼               ▼
-[1;37m┌────────────────┐[0m   [1;37m┌────────────────┐[0m   [1;37m┌────────────────────┐[0m
-[1;32m│ UserProfile     │[0m   [1;33m│ ToDoItem       │[0m   [1;34m│ InstructionMemory  │[0m
-[1;32m│ TrustCall Tool  │[0m   [1;33m│ TrustCall Tool │[0m   [1;34m│ TrustCall Tool     │[0m
-[1;37m└────────────────┘[0m   [1;37m└────────────────┘[0m   [1;37m└────────────────────┘[0m
-                │             │               │
-                └─────────────┼──────────────┘
-                              ▼
-[1;37m┌──────────────────────────┐[0m
-[1;36m│       Memory Store        │[0m
-[1;37m└─────────────┬────────────┘[0m
-                │
-                ▼
-[1;37m┌──────────────────────────┐[0m
-[1;35m│       SPY Listener        │[0m
-[1;35m│  (Tool Call Visibility)   │[0m
-[1;37m└─────────────┬────────────┘[0m
-                │
-                ▼
-[1;37m┌──────────────────────────┐[0m
-[1;32m│     HTML Patch Viewer     │[0m
-[1;37m└──────────────────────────┘[0m
-
-
-              ┌──────────────────────────┐
-                │        User Input         │
+                ┌──────────────────────────┐
+                │        User Input        │
                 └─────────────┬────────────┘
                               │
                               ▼
                 ┌──────────────────────────┐
-                │     Gemini LLM (ReAct)    │
-                │  Thought → Tool → Answer  │
+                │     Gemini LLM (ReAct)   │
+                │  Thought → Tool → Answer │
                 └─────────────┬────────────┘
                               │
                 ┌─────────────┼──────────────┐
                 ▼             ▼               ▼
       ┌────────────────┐  ┌────────────────┐  ┌────────────────────┐
-      │ UserProfile     │  │ ToDoItem       │  │ InstructionMemory  │
-      │ TrustCall Tool  │  │ TrustCall Tool │  │ TrustCall Tool     │
+      │ UserProfile     │ │ ToDoItem       │ │ InstructionMemory  │
+      │ TrustCall Tool  │ │ TrustCall Tool │ │ TrustCall Tool     │
       └────────────────┘  └────────────────┘  └────────────────────┘
-                │             │               │
+                │             │              │
                 └─────────────┼──────────────┘
                               ▼
                 ┌──────────────────────────┐
-                │     Memory Store          │
+                │     Memory Store         │
                 └─────────────┬────────────┘
                               │
                               ▼
@@ -72,7 +37,7 @@
                               │
                               ▼
                 ┌──────────────────────────┐
-                │   HTML Patch Viewer       │
+                │   HTML Patch Viewer      │
                 └──────────────────────────┘
 
 ## 🚀 What This Agent Can Do
