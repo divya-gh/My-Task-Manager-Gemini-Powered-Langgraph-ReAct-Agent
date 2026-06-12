@@ -19,8 +19,8 @@
                 ┌─────────────┼──────────────┐
                 ▼             ▼               ▼
       ┌────────────────┐  ┌────────────────┐  ┌────────────────────┐
-      │ UserProfile     │ │ ToDoItem       │ │ InstructionMemory  │
-      │ TrustCall Tool  │ │ TrustCall Tool │ │ TrustCall Tool     │
+      │ UserProfile     │ │ ToDoItem       │ │ InstructionMemory   │
+      │ TrustCall Tool  │ │ TrustCall Tool │ │ TrustCall Tool      │
       └────────────────┘  └────────────────┘  └────────────────────┘
                 │             │              │
                 └─────────────┼──────────────┘
