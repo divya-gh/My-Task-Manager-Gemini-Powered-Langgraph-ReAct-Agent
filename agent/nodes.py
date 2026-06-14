@@ -127,7 +127,7 @@ Follow these rules carefully:
     - name
     - age
     - relations
-    - interests
+    - interests [loves,likes, desires, wants etc]
     - job
     - location
     - any other required field

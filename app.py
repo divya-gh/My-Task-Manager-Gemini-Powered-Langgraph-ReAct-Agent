@@ -70,7 +70,6 @@ if "send" not in st.session_state:
 if "history" not in st.session_state:
     st.session_state.history = []
 
-# -------------------------------
 # Wrapper for Streamlit
 # -------------------------------
 def run_agent_streamlit(user_message):
@@ -216,7 +215,7 @@ if page == "Chat":
                     "Remind me to renew my passport next before July31st.",
                     "Help me create a study plan for Ethics in AI.",
                     "Track my job applications and suggest next steps.",
-                    "I need to book an appointment Dental cleaning tomorrow at 2PM."
+                    "I need to book an appointment Dental cleaning tomorrow at 2PM.",
                     "Organize my tasks by priority and deadline."
                 ]
 
@@ -225,12 +224,16 @@ if page == "Chat":
                 )
 
     if user_message:
-
         st.session_state.history.append(("user", user_message))
 
         with st.spinner("Thinking..."):
-
-            response, patches = run_agent_streamlit(user_message)
+            try:
+                st.write("DEBUG: calling agent...")
+                response, patches = run_agent_streamlit(user_message)
+                st.write("DEBUG: agent returned")
+            except Exception as e:
+                st.exception(e)
+                st.stop()
 
             final_msg = ""
 
@@ -240,40 +243,27 @@ if page == "Chat":
             ]
 
             if ai_messages:
-
                 last_ai = ai_messages[-1]
                 content = last_ai.content
 
-                if (
-                    isinstance(content, list)
-                    and len(content) > 0
-                    and isinstance(content[0], dict)
-                ):
-                    text = content[0].get("text", "")
+                if isinstance(content, str):
+                    final_msg = content.replace("AI_response:", "").strip()
 
-                    if text.startswith("AI_response:"):
-                        final_msg = text.replace(
-                            "AI_response:",
-                            ""
-                        ).strip()
+                elif isinstance(content, list):
+                    final_msg = str(content)
 
-                elif isinstance(content, str):
+        if final_msg:
+            st.session_state.history.append(("ai", final_msg))
 
-                    if content.startswith("AI_response:"):
-                        final_msg = content.replace(
-                            "AI_response:",
-                            ""
-                        ).strip()
-                    else:
-                        final_msg = content
+            if patches:
+                st.session_state.patches = patches
 
-        st.session_state.history.append(("ai", final_msg))
+            st.rerun()
+        else:
+            st.error("No response generated from agent.")
 
-        if patches:
-            st.session_state.patches = patches
-
-        st.rerun()
-
+    st.write("DEBUG: page loaded")
+    st.write("DEBUG history:", st.session_state.history)
 
 # -------------------------------
 # Task Dashboard Page
