@@ -84,23 +84,29 @@ def run_agent_streamlit(user_message):
 if page == "Chat":
     if page == "Chat": st.title(f"Hi {user_id}! 👋") 
     st.subheader("I'm your AI Task Manager.") 
-    st.markdown(""" I can help you: - Log tasks and update your to‑do list 
+    st.markdown(""" I can help you: 
+                
+                - Log tasks and update your to‑do list 
                 - Remember your preferences and profile 
                 - Learn about how you like your tasks to be managed 
-                - Show you exactly how I think using Patch Viewer """) 
-    st.markdown( "<p style='font-size:20px; font-weight:700; text-align:center; color:#2A4D69;'>" 
+                - Show you exactly how I think using Patch Viewer """
+                ) 
+    
+    st.markdown( "<p style='font-size:20px; font-weight:700; text-align:left; color:#2A4D69;'>" 
                 "Go ahead and start chatting with me in the <b>Chat</b> tab." "</p>", 
                 unsafe_allow_html=True ) 
-    st.markdown(""" And don’t forget to check your **Task Dashboard** & **Memory Store** to see what I’ve learned about you! """) 
+    
+    st.markdown(""" And don’t forget to check your **Task Dashboard** & **Memory Store** to see what I’ve learned about you! """)
+
     st.markdown( "<h2 style='text-align:center; color:#808080; font-weight:700;'>💬 Chat with Your AI Agent</h2>", unsafe_allow_html=True ) 
+    
     col1, col2, col3 = st.columns([1, 3, 1]) 
     
     with col2: 
         st.markdown( "<p style='font-size:18px; font-weight:600; text-align:left; margin-bottom:6px;'>How can I help you today?</p>", 
                     unsafe_allow_html=True )
 
-    st.title(f"Hi {user_id}! 👋")
-
+    
     for i, (role, msg) in enumerate(st.session_state.history):
         message(msg, is_user=(role == "user"), key=f"msg_{i}")
 
