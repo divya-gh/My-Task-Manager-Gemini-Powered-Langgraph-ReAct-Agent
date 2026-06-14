@@ -8,7 +8,6 @@ from agent.HTML_todo_dashboard import render_html_dashboard
 from agent.HTML_patch_viewer import render_patch_html
 from langchain_core.messages import HumanMessage, AIMessage
 
-
 st.set_page_config(page_title="My Task Manager — Gemini LangGraph Agent", layout="wide")
 
 # -------------------------------
@@ -18,14 +17,12 @@ if "user_id" not in st.session_state:
     st.session_state.user_id = ""
 
 if st.session_state.user_id == "":
-    # Create 3 columns to center the login box
     col1, col2, col3 = st.columns([1, 2, 1])
 
     with col2:
         st.markdown("<h1 style='text-align: center;'>👋 Welcome to Your AI Task Manager</h1>", unsafe_allow_html=True)
         st.markdown("<p style='text-align: center; font-size:19px;'>Please enter your name to begin.</p>", unsafe_allow_html=True)
 
-       # Larger text input label
         st.markdown(
             "<label style='font-size: 18px; font-weight: 600;'>Your Name:</label>",
             unsafe_allow_html=True
@@ -36,7 +33,7 @@ if st.session_state.user_id == "":
             key="login_name",
             placeholder="Type your name here...",
         )
-        # Add spacing
+
         st.write("")
         st.write("")
 
@@ -47,12 +44,6 @@ if st.session_state.user_id == "":
 
     st.stop()
 
-
-
-# -------------------------------
-# After Login Greeting
-# -------------------------------
-
 # -------------------------------
 # Sidebar Navigation
 # -------------------------------
@@ -62,43 +53,27 @@ with st.sidebar:
 
 user_id = str(st.session_state.user_id)
 config = {"configurable": {"thread_id": user_id, "user_id": user_id}}
-user_name = f"My name is {user_id}. "
 
-# -------------------------------
-# Chat Page
-# -------------------------------
+                # -------------------------------
+        # Initialize session state (once)
+        # -------------------------------
+if "chat_input_buffer" not in st.session_state:
+    st.session_state.chat_input_buffer = ""
 
-if page == "Chat":
-    
+if "chat_input" not in st.session_state:
+    st.session_state.chat_input = ""
 
-    st.title(f"Hi {user_id}! 👋")
-    st.subheader("I'm your AI Task Manager.")
+if "send" not in st.session_state:
+    st.session_state.send = False
 
-    st.markdown("""
-    I can help you:
-    - Log tasks and update your to‑do list  
-    - Remember your preferences and profile  
-    - Learn about how you like your tasks to be managed  
-    - Show you exactly how I think using Patch Viewer  
-    """)
-
-    # Bigger, centered highlight line
-    st.markdown(
-        "<p style='font-size:20px; color:#00FF00; font-weight:700; text-align:center; color:#2A4D69;'>"
-        "Go ahead and start chatting with me in the <b>Chat</b> tab."
-        "</p>",
-        unsafe_allow_html=True
-    )
-
-    st.markdown("""
-    And don’t forget to check your **Task Dashboard** & **Memory Store** to see what I’ve learned about you!
-    """)
+if "history" not in st.session_state:
+    st.session_state.history = []
 
 # -------------------------------
 # Wrapper for Streamlit
 # -------------------------------
 def run_agent_streamlit(user_message):
-    result = graph.invoke({"messages": [HumanMessage(content=user_name + user_message)]}, config)
+    result = graph.invoke({"messages": [HumanMessage(content=user_message)]}, config)
     return result["messages"], result.get("patches", None)
 
 
@@ -107,104 +82,79 @@ def run_agent_streamlit(user_message):
 # Chat Page
 # -------------------------------
 if page == "Chat":
-    # Professional header styling
-    st.markdown(
-        "<h2 style='text-align:center; color:#808080; font-weight:700;'>💬 Chat with Your AI Agent</h2>",
-        unsafe_allow_html=True
-    )
+    if page == "Chat": st.title(f"Hi {user_id}! 👋") 
+    st.subheader("I'm your AI Task Manager.") 
+    st.markdown(""" I can help you: - Log tasks and update your to‑do list 
+                - Remember your preferences and profile 
+                - Learn about how you like your tasks to be managed 
+                - Show you exactly how I think using Patch Viewer """) 
+    st.markdown( "<p style='font-size:20px; font-weight:700; text-align:center; color:#2A4D69;'>" 
+                "Go ahead and start chatting with me in the <b>Chat</b> tab." "</p>", 
+                unsafe_allow_html=True ) 
+    st.markdown(""" And don’t forget to check your **Task Dashboard** & **Memory Store** to see what I’ve learned about you! """) 
+    st.markdown( "<h2 style='text-align:center; color:#808080; font-weight:700;'>💬 Chat with Your AI Agent</h2>", unsafe_allow_html=True ) 
+    col1, col2, col3 = st.columns([1, 3, 1]) 
+    
+    with col2: 
+        st.markdown( "<p style='font-size:18px; font-weight:600; text-align:left; margin-bottom:6px;'>How can I help you today?</p>", 
+                    unsafe_allow_html=True )
 
-    if "history" not in st.session_state:
-        st.session_state.history = []
+    st.title(f"Hi {user_id}! 👋")
 
-    # Center the input field using columns
-    col1, col2, col3 = st.columns([1, 3, 1])
+    for i, (role, msg) in enumerate(st.session_state.history):
+        message(msg, is_user=(role == "user"), key=f"msg_{i}")
 
-    with col2:
-        st.markdown(
-            "<p style='font-size:18px; font-weight:600; text-align:left; margin-bottom:6px;'>How can I help you today?</p>",
-            unsafe_allow_html=True
-        )
-        # Initialize session state keys safely
-        if "chat_input_buffer" not in st.session_state:
-            st.session_state.chat_input_buffer = ""
+    user_message = st.chat_input("Type a message")
 
-        if "chat_input" not in st.session_state:
-            st.session_state.chat_input = ""
+    if user_message:
 
-        if "send" not in st.session_state:
-            st.session_state.send = False
+        st.session_state.history.append(("user", user_message))
 
-        if "history" not in st.session_state:
-            st.session_state.history = []
+        with st.spinner("Thinking..."):
 
-            
-        # Create a placeholder for the input
-        def submit_message():
-            st.session_state.send = True
-            st.session_state.chat_input = st.session_state.chat_input_buffer
-            st.session_state.chat_input_buffer = ""   # clear input safely
+            response, patches = run_agent_streamlit(user_message)
 
+            final_msg = ""
 
-        # Visible, centered input box
-        user_input = st.text_input(
-            "",
-            placeholder="Type your message here...",
-            key="chat_input",
-            on_change=submit_message
-        )
+            ai_messages = [
+                m for m in response
+                if isinstance(m, AIMessage)
+            ]
 
-        send_clicked = st.session_state.get("send", False)
-        #st.session_state["send"] = False
+            if ai_messages:
 
+                last_ai = ai_messages[-1]
+                content = last_ai.content
 
-    # Handle sending
+                if (
+                    isinstance(content, list)
+                    and len(content) > 0
+                    and isinstance(content[0], dict)
+                ):
+                    text = content[0].get("text", "")
 
-    #if send_clicked and user_input:
-    if send_clicked and st.session_state.chat_input:
-        user_message = st.session_state.chat_input
-        st.session_state.send = False
-        
-        # -------------------------------
-        # Thinking.......
-        # -------------------------------
-        # Create a placeholder for typing indicator
+                    if text.startswith("AI_response:"):
+                        final_msg = text.replace(
+                            "AI_response:",
+                            ""
+                        ).strip()
 
-        thinking_placeholder = st.empty()
+                elif isinstance(content, str):
 
-        # Show typing indicator
-        thinking_placeholder.markdown(
-            "<p style='font-size:16px; color:gray;'>🤖 Thinking…</p>",
-            unsafe_allow_html=True
-        )
+                    if content.startswith("AI_response:"):
+                        final_msg = content.replace(
+                            "AI_response:",
+                            ""
+                        ).strip()
+                    else:
+                        final_msg = content
 
-        # 2. Run agent
-        response, patches = run_agent_streamlit(user_input)       
-        #print(f"Response: {response}")
-        
-        # 3. Remove typing indicator
-        thinking_placeholder.empty()
-
-        # Extract ONLY final AI_response
-        final_msg = ""
-        for msg in response:
-            if isinstance(msg, AIMessage):
-                content = msg.content
-                if isinstance(content, list):
-                    content = content[0].get("text", "")
-                if isinstance(content, str):
-                    final_msg = content
-                    break
-
-        st.session_state.history.append(("user", user_input))
         st.session_state.history.append(("ai", final_msg))
-
 
         if patches:
             st.session_state.patches = patches
 
-    # Display chat history
-    for i, (role, msg) in enumerate(st.session_state.history):
-        message(msg, is_user=(role == "user"), key=f"msg_{i}")
+        st.rerun()
 
 
 # -------------------------------
@@ -214,8 +164,6 @@ elif page == "Task Dashboard":
     st.subheader("📋 Task Dashboard")
     html = render_html_dashboard(user_id, store_memory)
     st.components.v1.html(html, height=600, scrolling=True)
-
-
 
 # -------------------------------
 # Memory Store Page
@@ -240,7 +188,6 @@ elif page == "Memory Store":
         for m in items:
             st.json(m.value)
 
-
 # -------------------------------
 # Patch Viewer Page
 # -------------------------------
@@ -251,24 +198,3 @@ elif page == "Patch Viewer":
         st.components.v1.html(html, height=600, scrolling=True)
     else:
         st.info("No patches yet. Chat with the agent first.")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
