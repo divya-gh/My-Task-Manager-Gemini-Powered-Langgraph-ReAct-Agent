@@ -7,6 +7,7 @@ from agent.memory_store import store_memory
 from agent.HTML_todo_dashboard import render_html_dashboard
 from agent.HTML_patch_viewer import render_patch_html
 from langchain_core.messages import HumanMessage, AIMessage
+import random
 
 st.set_page_config(page_title="My Task Manager — Gemini LangGraph Agent", layout="wide")
 
@@ -83,34 +84,145 @@ def run_agent_streamlit(user_message):
 # -------------------------------
 if page == "Chat":
     if page == "Chat": st.title(f"Hi {user_id}! 👋") 
-    st.subheader("I'm your AI Task Manager.") 
-    st.markdown(""" I can help you: 
-                
-                - Log tasks and update your to‑do list 
-                - Remember your preferences and profile 
-                - Learn about how you like your tasks to be managed 
-                - Show you exactly how I think using Patch Viewer """
-                ) 
-    
-    st.markdown( "<p style='font-size:20px; font-weight:700; text-align:left; color:#2A4D69;'>" 
-                "Go ahead and start chatting with me in the <b>Chat</b> tab." "</p>", 
-                unsafe_allow_html=True ) 
-    
-    st.markdown(""" And don’t forget to check your **Task Dashboard** & **Memory Store** to see what I’ve learned about you! """)
+    st.markdown("""
+                    <style>
+                        .hero-title {
+                            font-size: 38px;
+                            font-weight: 700;
+                            color: #EAEAEA;
+                            margin-bottom: 10px;
+                        }
 
-    st.markdown( "<h2 style='text-align:center; color:#808080; font-weight:700;'>💬 Chat with Your AI Agent</h2>", unsafe_allow_html=True ) 
-    
-    col1, col2, col3 = st.columns([1, 3, 1]) 
-    
-    with col2: 
-        st.markdown( "<p style='font-size:18px; font-weight:600; text-align:left; margin-bottom:6px;'>How can I help you today?</p>", 
-                    unsafe_allow_html=True )
+                        .hero-subtitle {
+                            font-size: 18px;
+                            color: #C0C0C0;
+                            margin-bottom: 25px;
+                        }
 
-    
+                        .section-header {
+                            font-size: 24px;
+                            font-weight: 600;
+                            color: #D6D6D6;
+                            margin-top: 25px;
+                            margin-bottom: 15px;
+                        }
+
+                        .feature-card {
+                            background-color: #2B2B2B;
+                            padding: 15px 20px;
+                            border-radius: 12px;
+                            margin-bottom: 12px;
+                            border-left: 5px solid #7A7A7A;
+                        }
+
+                        .feature-title {
+                            font-size: 18px;
+                            font-weight: 600;
+                            color: #F0F0F0;
+                        }
+
+                        .feature-text {
+                            font-size: 15px;
+                            color: #D0D0D0;
+                        }
+
+                        .nav-box {
+                            background-color: #333333;
+                            padding: 15px;
+                            border-radius: 12px;
+                            margin-top: 20px;
+                            color: #E0E0E0;
+                        }
+
+                        .ready-box {
+                            background-color: #3A3A3A;
+                            padding: 18px;
+                            border-radius: 12px;
+                            margin-top: 25px;
+                            text-align: center;
+                            font-size: 18px;
+                            font-weight: 600;
+                            color: #F0F0F0;
+                        }
+                        </style>
+
+                    <div class="hero-title">
+                    🧠 Your Personal AI Task Manager Assistant
+                    </div>
+
+                    <div class="hero-subtitle">
+                    More than a simple to-do list. Your AI-powered productivity partner that learns how you work, adapts to your preferences, and helps you stay organized and focused.
+                    </div>
+
+                    <div class="section-header">
+                    🚀 What I Can Do
+                    </div>
+
+                    <div class="feature-card">
+                    <div class="feature-title">✅ Manage Your Tasks</div>
+                    <div class="feature-text">
+                    Create, update, organize, prioritize, and track tasks while maintaining a personalized to-do list.
+                    </div>
+                    </div>
+
+                    <div class="feature-card">
+                    <div class="feature-title">✅ Provide Intelligent Guidance</div>
+                    <div class="feature-text">
+                    Analyze your tasks, suggest next actions, identify missing steps, and help you plan effectively.
+                    </div>
+                    </div>
+
+                    <div class="feature-card">
+                    <div class="feature-title">✅ Learn Your Preferences</div>
+                    <div class="feature-text">
+                    Understand how you prefer to organize and manage work by learning recurring habits and planning styles.
+                    </div>
+                    </div>
+
+                    <div class="feature-card">
+                    <div class="feature-title">✅ Build Your Personal Profile</div>
+                    <div class="feature-text">
+                    Learn about your interests, goals, and work patterns to provide increasingly personalized recommendations.
+                    </div>
+                    </div>
+
+                    <div class="feature-card">
+                    <div class="feature-title">✅ Reason & Plan Transparently</div>
+                    <div class="feature-text">
+                    Track how decisions are made, understand the reasoning behind recommendations, and see how your AI assistant works.
+                    </div>
+                    </div>
+
+                    <div class="nav-box">
+                    <b>Explore the Navigation Panel</b><br><br>
+
+                    📋 <b>Task Dashboard</b> — View and manage your tasks<br>
+                    🧠 <b>Memory Store</b> — Review learned preferences and profile information<br>
+                    🔍 <b>Patch Viewer</b> — See how the AI reasons and makes decisions
+                    </div>
+
+                    <div class="ready-box">
+                    💬 Ready to get started?<br><br>
+                    Ask me about your tasks, goals, projects, travel plans, learning objectives, or anything you'd like help organizing.
+                    </div>
+                    """, unsafe_allow_html=True)                                
+
+
     for i, (role, msg) in enumerate(st.session_state.history):
         message(msg, is_user=(role == "user"), key=f"msg_{i}")
 
-    user_message = st.chat_input("Type a message")
+    examples = [
+                    " EX: Plan my trip to London this Saturday. I love coffee. Suggest places to visit and remind me when I arrive.",
+                    "Remind me to renew my passport next before July31st.",
+                    "Help me create a study plan for Ethics in AI.",
+                    "Track my job applications and suggest next steps.",
+                    "I need to book an appointment Dental cleaning tomorrow at 2PM."
+                    "Organize my tasks by priority and deadline."
+                ]
+
+    user_message = st.chat_input(
+                    placeholder=random.choice(examples)
+                )
 
     if user_message:
 

@@ -204,21 +204,22 @@ Follow these rules carefully:
 
 4. Extract only what the user explicitly states or strongly implies. Do not 
    invent tasks or deadlines.
+5. sometimes task can be generic. still create a do list with provided solutions and intructions
 
-5. Each ToDo item should be clean, structured, and include fields such as:
+6. Each ToDo item should be clean, structured, and include fields such as:
    - task
    - status
    - deadline (ISO format when possible)
    - instruction or description
    - reminder time (if applicable)
    - desired_solution (what needs to be done, remembered or taken care of to complete the task)
-
-6. If the user expresses intent to remember something for later (e.g., 
+7. Use instructions memory to learn about the user and provide better solutions to his task so that he can manage it easily.
+8. If the user expresses intent to remember something for later (e.g., 
    “remind me”, “don’t let me forget”), convert it into a ToDo item with an 
    appropriate reminder or deadline.
-7. Important: If user asks for any help (e.g., asks for suggesion, uses 'Tell me, Let me know, what else needs to be done , Provide me solution' in the conversation), 
- convert it into a proper 'desired_solution'.
-7. Ensure the final ToDo memory reflects the most accurate and up‑to‑date 
+9. Important: If user asks for any help (e.g., asks for suggesion, uses 'Tell me, Let me know, what else needs to be done , Provide me solution' in the conversation), 
+ convert it into a proper 'desired_solution that helps the user and not LLM'.
+10. Ensure the final ToDo memory reflects the most accurate and up‑to‑date 
    understanding of the user's tasks and plans.
 """
 
@@ -267,9 +268,11 @@ def todo_update(state:MessagesState , config:RunnableConfig , store:BaseStore):
 generate_instr_LLM_prompt = ''' You are a proficient instructions generator who is capable of writing instructions on how to manage, 
                             update todo list items for the user. reflect on following instructions:
                             1. Use any instruction or information given by the user(they might tell you how they would like to the todo list to be added or updated).
-                            2. Make it as easy as possible follow , manage and understand the list.
-                            3. Use existing memory about the instructions given before.
-                            4. Be proffessional and helpful. 
+                            2. Use instructions and desired solutions in the memory to remember how to track the todo lists
+                            3. Use the TODO memory to understand what user needs to help him provide better solutions next time. Use it to create instructions.
+                            4. Make it as easy as possible follow , manage and understand the list.
+                            5. Use existing memory about the instructions given before.
+                            6. Be proffessional and helpful. 
                             Here is the current instruction: <current_instructions>{instr}</current_instructions>'''
 
 
